@@ -20,11 +20,12 @@ function navigate(array $routes)
     }
 
     if (!isset($routes[$method][$path])) {
-        // TODO parser da exception para json com status code especifico
-        throw new Exception('Route not found', 404);
+        json_response(code: 404);
+        return;
     }
 
     [$controllerClass, $func] = $routes[$method][$path];
     $controller = $controllerDir . $controllerClass;
-    return (new $controller())->$func($body);
+
+    (new $controller())->$func($body);
 }

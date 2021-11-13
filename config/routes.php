@@ -2,12 +2,19 @@
 
 $routes = [
     'GET' => [
-        '/api/test' => ['IndexController', 'hello']
+        '/api/test' => ['IndexController', 'hello'],
+        '/api/catalog' => ['CatalogController', 'read'],
     ],
-    'POST' => [],
+    'POST' => [
+        '/api/catalog' => ['CatalogController', 'create'],
+    ],
     'PUT' => [
-        '/api/test' => ['IndexController', 'hello']
+        '/api/catalog' => ['CatalogController', 'update'],
     ],
-    'PATCH' => [],
-    'DELETE' => [],
+    'PATCH' => [
+        '/api/catalog' => ['CatalogController', 'changeStatus'],
+    ],
+    'DELETE' => [
+        '/api/catalog' => ['CatalogController', 'delete'],
+    ],
 ];

@@ -6,6 +6,8 @@ class IndexController
 {
     public function hello(array $params)
     {
-        echo $params['text'];
+        json_response([
+            'message' => $params['text'] ?? 'Hello World'
+        ]);
     }
 }

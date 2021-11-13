@@ -16,15 +16,24 @@ correto funcionamento:
 * `php -S 127.0.0.1:8000`
 
 ## Tarefas
-- [ ] Montagem do esqueleto do projeto
+- [x] Montagem do esqueleto do projeto
   * Composer: 
     * `composer init`
     * Inserir o autoload no index.php
-    * 
   * PSR-4
+  * Helper da resposta em json
   * Arquivo de rotas e health check
-    * Dentro do index.php
-    * 
-- [ ] Integração com o banco de dados
-- [ ] CRUD de Plataformas
+- [x] Integração com o banco de dados
+* Env: `composer require symfony/dotenv`
 - [ ] CRUD do Catálogo de Videos
+
+## Banco
+```
+CREATE TABLE `catalog` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(255) NOT NULL,
+  `status` enum('PENDING','IN_PROGRESS','DONE') NOT NULL DEFAULT 'PENDING',
+  `plataform` varchar(255) NULL,
+  `url` text NULL
+); 
+```
