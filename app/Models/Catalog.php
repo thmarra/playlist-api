@@ -10,12 +10,7 @@ class Catalog extends Model
         'DONE'
     ];
 
-    protected string $table = 'catalog';
-
-    public ?string $name; // obrigatorio
-    public ?string $status; // obrigatorio
-    public ?string $plataform; // obrigatorio
-    public ?string $url = null; // opcional
+    protected array $fieldNames = ['id', 'name', 'status', 'plataform', 'url'];
 
     public function selectAll(): array
     {
@@ -27,86 +22,77 @@ class Catalog extends Model
         // Como nenhum dos valores a ser usado no where pode ser NULL, não precisa preocupar com isso no momento,
         // mas se algum for opcional então vai precisar alterar
 
-        if (isset($this->name)) {
+        if ($this->get('name')) {
             $filters[] = "name LIKE ?";
-            $filterValues[] = "%$this->name%";
+            $filterValues[] = "%" . $this->fields['name'] . "%";
         }
 
-        if (isset($this->id)) {
+        if ($this->get('id')) {
             $filters[] = "id = ?";
-            $filterValues[] = $this->id;
+            $filterValues[] = $this->fields['id'];
         }
 
-        if (isset($this->status)) {
+        if ($this->get('status')) {
             $filters[] = "status = ?";
-            $filterValues[] = $this->status;
+            $filterValues[] = $this->fields['status'];
         }
 
-        if (isset($this->plataform)) {
+        if ($this->get('plataform')) {
             $filters[] = "plataform = ?";
-            $filterValues[] = $this->plataform;
+            $filterValues[] = $this->fields['plataform'];
         }
 
-        $query = "SELECT * FROM {$this->table}";
+        $query = "SELECT * FROM catalog";
 
         if (!empty($filters)) {
             $query .= " WHERE " . implode(' AND ', $filters);
         }
 
-        // var_dump($query, $filterValues, $this->toArray());
+        // var_dump($query, $filterValues, $this->fields);
 
         return $this->fetchAll($query, $filterValues);
     }
 
-    public function find(): self
+    public function find(): void
     {
-        $query = "SELECT * FROM {$this->table} WHERE id = ?";
-        $row = $this->fetchOne($query, [$this->id]);
-
-        if ($row) {
-            $this->setValues((array) $row);
-        }
-
-        return $this;
+        $query = "SELECT * FROM catalog WHERE id = ?";
+        $this->fetchOne($query, [$this->get('id')]);
     }
 
     public function exists(): bool
     {
-        $query = "SELECT id FROM {$this->table} WHERE id = ?";
-        $value = $this->fetchOne($query, [$this->id]);
+        $query = "SELECT id FROM catalog WHERE id = ?";
+        $value = $this->fetchOne($query, [$this->get('id')]);
         return !is_null($value);
     }
 
     public function save(): void
     {
-        $query = "INSERT INTO {$this->table} (name, status, plataform, url) VALUES (?, ?, ?, ?)";
-        $body = [$this->name, $this->status, $this->plataform, $this->url];
+        $query = "INSERT INTO catalog (name, status, plataform, url) VALUES (?, ?, ?, ?)";
+        $body = [$this->get('name'), $this->get('status'), $this->get('plataform'), $this->get('url')];
 
-        $id = $this->insert($query, $body);
-        $this->id = $id;
+        $this->fields['id'] = $this->insert($query, $body);
     }
 
     public function update(): int
     {
-        $query = "UPDATE {$this->table} SET name = :name, status = :status, plataform = :plataform, url = :url WHERE id = :id";
-        $body = $this->toArray();
-
-        return $this->executeReturnAffected($query, $body);
+        $query = "UPDATE catalog SET name = :name, status = :status, plataform = :plataform, url = :url WHERE id = :id";
+        return $this->executeReturnAffected($query, $this->fields);
     }
 
     public function updateStatus(): int
     {
-        $query = "UPDATE {$this->table} SET status = ? WHERE id = ?";
-        $body = [$this->status, $this->id];
+        $query = "UPDATE catalog SET status = ? WHERE id = ?";
+        $body = [$this->get('status'), $this->get('id')];
 
         return $this->executeReturnAffected($query, $body);
     }
 
     public function delete(): bool
     {
-        $query = "DELETE FROM {$this->table} WHERE id = ?";
+        $query = "DELETE FROM catalog WHERE id = ?";
 
-        $affectedRows = $this->executeReturnAffected($query, [$this->id]);
+        $affectedRows = $this->executeReturnAffected($query, [$this->get('id')]);
         return $affectedRows === 1;
     }
 

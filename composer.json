@@ -6,8 +6,8 @@
       "App\\": "app/"
     },
     "files": [
-      "src/routing.php",
-      "src/helpers.php"
+      "src/helpers.php",
+      "src/routes.php"
     ]
   },
   "require": {

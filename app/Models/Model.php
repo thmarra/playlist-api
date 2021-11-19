@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Exception;
 use PDO;
-use ReflectionObject;
-use ReflectionProperty;
 
 class Model
 {
-    public int $id;
-    protected string $table;
+    public array $fields = [];
+    protected array $fieldNames = [];
 
     private PDO $pdo;
 
@@ -46,6 +44,11 @@ class Model
         }
 
         $this->pdo = new PDO("$driver:host=$host;dbname=$name", $user, $pass);
+    }
+
+    public function get(string $fieldName)
+    {
+        return $this->fields[$fieldName] ?? null;
     }
 
     protected function fetchAll(string $query, array $filters): array
@@ -84,39 +87,15 @@ class Model
         return $statement->rowCount();
     }
 
-    public function toArray(): array
-    {
-        $fields = $this->getFields();
-        $values = [];
-
-        foreach($fields as $field) {
-            $fieldName = $field->getName();
-            $values[$fieldName] = $this->$fieldName ?? null;
-        }
-
-        return $values;
-    }
-
-    private function getFields(): array
-    {
-        return (new ReflectionObject($this))->getProperties(ReflectionProperty::IS_PUBLIC);
-    }
-
     protected function setValues(array $values): self
     {
         if (empty($values)) {
             return $this;
         }
 
-        $fields = $this->getFields();
-
-        foreach ($fields as $field) {
-            // https://www.php.net/manual/en/class.reflectionproperty.php
-
-            $fieldName = $field->getName();
-
-            if (isset($values[$fieldName])) {
-                $this->$fieldName = empty($values[$fieldName]) ? null : $values[$fieldName];
+        foreach ($this->fieldNames as $fieldName) {
+            if (array_key_exists($fieldName, $values)) {
+                $this->fields[$fieldName] = empty($values[$fieldName]) ? null : $values[$fieldName];
             }
         }
 
